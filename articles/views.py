@@ -18,9 +18,9 @@ class NewsList(ListView):
     context_object_name = 'news'
 
 class ArticleDetail(DetailView):
-       # Модель всё та же, но мы хотим получать информацию по отдельному товару
+       # Модель всё та же, но мы хотим получать информацию по отдельной статье.
        model = Post
-       # Используем другой шаблон — product.html
+       # Используем другой шаблон — article.html
        template_name = 'article.html'
-       # Название объекта, в котором будет выбранный пользователем продукт
+       # Название объекта, в котором будет выбранная пользователем статья.
        context_object_name = 'article'
