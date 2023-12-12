@@ -80,6 +80,12 @@ class Post(models.Model):
         preview = self.text_article_or_news[:124] + '...'
         return preview
 
+    # Форматирование вывода данных для вывода на основную страницу.
+    def __str__(self):
+        return (f'{self.title.title()}   '
+                f'{self.date_and_time.strftime('%d-%m-%Y %H:%M:%S')}   '
+                f'{self.text_article_or_news[:20]}')
+
 
 # 4. Модель PostCategory
 # Промежуточная модель для связи «многие ко многим»:
