@@ -39,9 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'articles',
 
-    # подключаем ещё приложения
+    # Подключаем ещё приложения.
     'django.contrib.sites',
     'django.contrib.flatpages',
+
+    # Доступ к фильтрам в приложении‘django_filters’.
+    # Работает при установке пакета: python -m pip install django-filter.
+    'django_filters',
 ]
 
 SITE_ID = 1
