@@ -1,7 +1,10 @@
 # Импортируем классы, которые говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
-from django.views.generic import ListView, DetailView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+
 from .models import Post
+from .forms import PostForm, ArticleForm
 from .filters import PostFilter
 
 
@@ -45,3 +48,43 @@ class ArticleDetail(DetailView):
        template_name = 'article.html'
        # Название объекта, в котором будет выбранная пользователем статья.
        context_object_name = 'article'
+
+# Добавляем новое представление для создания Новостей.
+class NewsCreate(CreateView):
+    # Указываем нашу разработанную форму
+    form_class = PostForm
+    # модель товаров
+    model = Post
+    # и новый шаблон, в котором используется форма.
+    template_name = 'news_edit.html'
+
+# Добавляем представление для изменения Новостей.
+class NewsUpdate(UpdateView):
+    form_class = PostForm
+    model = Post
+    template_name = 'news_edit.html'
+
+# Представление удаляющее Новости.
+class NewsDelete(DeleteView):
+    model = Post
+    template_name = 'news_delete.html'
+    success_url = reverse_lazy('news_list')
+
+
+# Добавляем новое представление для создания Статей.
+class ArticleCreate(CreateView):
+    form_class = ArticleForm
+    model = Post
+    template_name = 'articl_edit.html'
+
+# Добавляем представление для изменения Статей.
+class ArticleUpdate(UpdateView):
+    form_class = ArticleForm
+    model = Post
+    template_name = 'articl_edit.html'
+
+# Представление удаляющее Статьи.
+class ArticleDelete(DeleteView):
+    model = Post
+    template_name = 'articl_delete.html'
+    success_url = reverse_lazy('news_list')

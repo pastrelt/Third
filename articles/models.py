@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 ## 1. Модель Author
@@ -85,6 +86,9 @@ class Post(models.Model):
         return (f'{self.title.title()}   '
                 f'{self.date_and_time.strftime('%d-%m-%Y %H:%M:%S')}   '
                 f'{self.text_article_or_news[:20]}')
+
+    def get_absolute_url(self):
+        return reverse('article_detail', args=[str(self.id)])
 
 
 # 4. Модель PostCategory

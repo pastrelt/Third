@@ -11,6 +11,7 @@ class DateInput(forms.DateInput):
 # Создаем свой набор фильтров для модели Post.
 # FilterSet, который мы наследуем,
 class PostFilter(FilterSet):
+    # Первичные устаноки отдельных полей.
     # Фильтруем по названию.
     # Meta не может изменить названия полей поиска.
     title = CharFilter(lookup_expr='startswith',
