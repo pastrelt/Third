@@ -19,9 +19,17 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('pages/', include('django.contrib.flatpages.urls')),
+    #path('pages/', include('django.contrib.flatpages.urls')),
 
     # Делаем так, чтобы все адреса из нашего приложения (articles/urls.py)
     # подключались к главному приложению с префиксом news/.
     path('news/', include('articles.urls')),
+
+    # Добавил перенаправление корневой страницы в приложение protect.
+    path('', include('protect.urls')),
+    # Все страницы, URL которых начинается с sign/, перенаправляю в приложение sign.
+    path('sign/', include('sign.urls')),
+
+    # Добавил перенаправление на ‘accounts/’ для всех URL, которые будут управляться подключенным пакетом.
+    path('accounts/', include('allauth.urls')),
 ]

@@ -25,12 +25,15 @@ SECRET_KEY = 'django-insecure-_w1qf8)2+++9au^^8kjcv683jl6mdj76$@2-h@jau790no^gc4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+
+
+# The following apps are required:
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'articles',
 
+    # Доступ.
+    'sign',
+    'protect',
+
     # Подключаем ещё приложения.
     'django.contrib.sites',
     'django.contrib.flatpages',
@@ -46,6 +53,15 @@ INSTALLED_APPS = [
     # Доступ к фильтрам в приложении‘django_filters’.
     # Работает при установке пакета: python -m pip install django-filter.
     'django_filters',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # ... включите поставщиков, которых вы хотите включить:
+    'allauth.socialaccount.providers.google',
+
+    # Приложение, которое может помочь вам просматривать все настройки URL проекта.
+    'django_extensions',
 ]
 
 SITE_ID = 1
@@ -60,6 +76,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+
+    # добавил по причине ошибки при миграции данных в модуле D8 урок 4.
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'News_Portal.urls'
@@ -67,17 +86,33 @@ ROOT_URLCONF = 'News_Portal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+
+        #'DIRS': [BASE_DIR/'templates'],
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        #'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
+
+                # `allauth` нужно это от Джанго.
                 'django.template.context_processors.request',
+
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
             ],
         },
     },
+]
+
+AUTHENTICATION_BACKENDS = [
+
+    # Необходимо войти в систему по имени пользователя в администраторе Django, независимо от `allauth`.
+    'django.contrib.auth.backends.ModelBackend',
+
+    # Cпециальные методы аутентификации `allauth`, такие как вход по электронной почте.
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 WSGI_APPLICATION = 'News_Portal.wsgi.application'
@@ -112,6 +147,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# После этого, когда пользователь попытается получить доступ к защищенной странице без аутентификации,
+# он будет перенаправлен на страницу входа, указанную в переменной LOGIN_URL.
+# Конкретизация URL-адреса, на котором находится страница аутентификации (в примере это sign/login/),
+# а также страница, на которую перенаправляется пользователь после успешного входа на сайт,
+# в данном случае корневая страница сайта.
+LOGIN_URL = 'accounts/login/'
+#LOGIN_URL = 'sign/login/'
+LOGIN_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -137,3 +180,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static"]
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# Чтобы allauth распознал нашу форму как ту, что должна выполняться вместо формы по умолчанию,
+# необходимо добавить строчку в файл настроек проекта settings.py:
+ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}

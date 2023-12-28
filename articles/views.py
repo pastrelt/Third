@@ -7,7 +7,6 @@ from .models import Post
 from .forms import PostForm, ArticleForm
 from .filters import PostFilter
 
-
 class NewsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
     model = Post
