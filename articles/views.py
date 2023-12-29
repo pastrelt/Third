@@ -7,6 +7,15 @@ from .models import Post
 from .forms import PostForm, ArticleForm
 from .filters import PostFilter
 
+# Добавляем для проверки прав доступа.
+from django.views.generic import View
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
+# Представление прав (добавления - add и изменения - change) дступа приложения articles модели Post.
+class MyView(PermissionRequiredMixin, View):
+    permission_required = ('articles.add_post',
+                           'articles.change_post',)
+
 class NewsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
     model = Post
@@ -50,6 +59,9 @@ class ArticleDetail(DetailView):
 
 # Добавляем новое представление для создания Новостей.
 class NewsCreate(CreateView):
+    # Проверка доступа на добавление.
+    permission_required = ('articles.add_post',)
+
     # Указываем нашу разработанную форму
     form_class = PostForm
     # модель товаров
@@ -59,6 +71,9 @@ class NewsCreate(CreateView):
 
 # Добавляем представление для изменения Новостей.
 class NewsUpdate(UpdateView):
+    # Проверка доступа на изменение.
+    permission_required = ('articles.change_post',)
+
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
@@ -72,12 +87,18 @@ class NewsDelete(DeleteView):
 
 # Добавляем новое представление для создания Статей.
 class ArticleCreate(CreateView):
+    # Проверка доступа на добавление.
+    permission_required = ('articles.add_post',)
+
     form_class = ArticleForm
     model = Post
     template_name = 'articl_edit.html'
 
 # Добавляем представление для изменения Статей.
 class ArticleUpdate(UpdateView):
+    # Проверка доступа на изменение.
+    permission_required = ('articles.change_post',)
+
     form_class = ArticleForm
     model = Post
     template_name = 'articl_edit.html'
