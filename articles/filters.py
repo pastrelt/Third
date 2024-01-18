@@ -31,11 +31,4 @@ class PostFilter(FilterSet):
                                    widget=DateInput,
                                    lookup_expr='gt',
                                    label='Дата')
-    # Meta не нужен.
-    # class Meta:
-    #     # В Meta классе мы должны указать Django модель,
-    #     # в которой будем фильтровать записи.
-    #     model = Post
-    #     # В fields мы описываем по каким полям модели
-    #     # будет производиться фильтрация.
-    #     fields = { 'title' }
+

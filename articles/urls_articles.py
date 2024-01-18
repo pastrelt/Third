@@ -1,7 +1,7 @@
 from django.urls import path
 # Импортируем созданное нами представление
-from .views import NewsList, NewsCreate, NewsUpdate, NewsDelete
-from .views import ArticleDetail
+from .views import ArticleDetail, ArticleCreate, ArticleUpdate, ArticleDelete
+from .views import NewsList
 
 urlpatterns = [
     # path — означает путь.
@@ -14,8 +14,8 @@ urlpatterns = [
     # int — указывает на то, что принимаются только целочисленные значения
     path('<int:pk>', ArticleDetail.as_view(), name='article_detail'),
 
-    # Работа со страничками новостей.
-    path('create/', NewsCreate.as_view(), name='news_create'),
-    path('<int:pk>/update/', NewsUpdate.as_view(), name='news_update'),
-    path('<int:pk>/delete/', NewsDelete.as_view(), name='news_delete'),
+    # Работа со страничками статей.
+    path('create/', ArticleCreate.as_view(), name='article_create'),
+    path('<int:pk>/update/', ArticleUpdate.as_view(), name='article_update'),
+    path('<int:pk>/delete/', ArticleDelete.as_view(), name='article_delete'),
 ]

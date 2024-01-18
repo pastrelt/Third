@@ -32,4 +32,8 @@ urlpatterns = [
 
     # Добавил перенаправление на ‘accounts/’ для всех URL, которые будут управляться подключенным пакетом.
     path('accounts/', include('allauth.urls')),
+
+    # Все страницы, URL которых начинается с articles/, перенаправляю в приложение articles/urls_articles.py .
+    # исправление ошибки предыдущео задания.
+    path('article/', include('articles.urls_articles')),
 ]

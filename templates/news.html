@@ -28,8 +28,9 @@ Post
             {% for post in news %}
             <tr>
                 <td>{{ post.title }}</td>
-                <td>{{ post.date_and_time}}</td>
+<!--                исправление ошибки-->
                 <td>{{ post.text_article_or_news|truncatechars:20 }}</td>
+                <td>{{ post.date_and_time}}</td>
                 <td>{{ post.author.author.username }}</td>
             </tr>
             {% endfor %}

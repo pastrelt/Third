@@ -37,6 +37,11 @@ class Author(models.Model):  # наследуемся от класса Model
         self.author_rating = articles_rating + comments_rating + comments_to_articles_rating
         self.save()
 
+    # исправление ошибки прошлого задания.
+    # Выводит значение username при вызове Author.author.
+    def __str__(self):
+        return (self.author.username)
+
 
 # 2. Модель Category
 # Категории новостей/статей — темы, которые они отражают (спорт, политика, образование и т. д.).
@@ -44,7 +49,16 @@ class Author(models.Model):  # наследуемся от класса Model
 # (в определении поля необходимо написать параметр unique = True).
 class Category(models.Model):
     name_of_category = models.CharField(max_length=100, unique=True)
+    # Добавьте пользователю возможность подписываться на рассылку новостей в какой-либо категории.
+    # Для этого добавьте поле subscribers (соотношение manytomany), в которое будут записываться пользователи,
+    # подписанные на обновления в данной категории.
+    subscribers = models.ManyToManyField(User, through = 'Categories_subscribers')
 
+# 2.1 Модель Categories_subscribers
+# Добавил вспомоательную модель при связи многие ко многим.
+class Categories_subscribers(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    category = models.ForeignKey('Category', on_delete = models.CASCADE)
 
 
 # 3. Модель Post
@@ -62,7 +76,7 @@ class Post(models.Model):
     author = models.ForeignKey('Author', on_delete = models.CASCADE)
     article_or_news = models.CharField(max_length=7, choices=[('статья', 'статья'), ('новость', 'новость')])
     date_and_time = models.DateTimeField(auto_now_add = True)
-    many_to_many_relation = models.ManyToManyField('Category', through = 'PostCategory')
+    category = models.ManyToManyField('Category', through = 'PostCategory')
     title =  models.CharField(max_length = 255)
     text_article_or_news = models.TextField()
     rating = models.IntegerField(default = 0)
