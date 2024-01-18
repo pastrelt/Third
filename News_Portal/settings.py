@@ -185,8 +185,15 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # Чтобы allauth распознал нашу форму как ту, что должна выполняться вместо формы по умолчанию,
 # необходимо добавить строчку в файл настроек проекта settings.py:
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
+
+# Настройки для отправки писем.
+EMAIL_HOST = 'smtp.yandex.ru'  # Адрес сервера Яндекс-почты для всех один и тот же.
+EMAIL_PORT = 465  # Порт smtp сервера тоже одинаковый.
+EMAIL_HOST_USER = 'passtreltsov'  # Имя почтовоого ящика ( до собаки ) отправителя.
+EMAIL_HOST_PASSWORD = 'uzsjmibnpkxffmyf'  # Пароль от почты.
+EMAIL_USE_SSL = True  # Яндекс использует ssl.

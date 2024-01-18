@@ -11,10 +11,84 @@ from .filters import PostFilter
 from django.views.generic import View
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
+# Добавляем для отправки сообщения.
+from django.shortcuts import render, reverse, redirect
+from django.contrib.auth.models import User
+from .models import Author, PostCategory, Category
+from django.core.mail import send_mail
+
+
+
+# Добавляем новое представление для создания Новостей.
+# Изменил класс, добавляем нового представления для создания Новостей с выбором категории.
+class NewsCreate(CreateView):
+    # Проверка доступа на добавление.
+    permission_required = ('articles.add_post',)
+    # Указываем нашу разработанную форму
+    form_class = PostForm
+    # модель товаров
+    model = Post
+    # и новый шаблон, в котором используется форма.
+    template_name = 'news_edit.html'
+
+    # Переопределяем метод form_valid для дополниетльной работы в таблице PostCategory.
+    def form_valid(self, form):
+        author = form.cleaned_data['author']
+        article_or_news = form.cleaned_data['article_or_news']
+        title = form.cleaned_data['title']
+        text_article_or_news = form.cleaned_data['text_article_or_news']
+        category = form.cleaned_data['category']
+        category_id = Category.objects.get(name_of_category = category)
+
+        # Записываем информацию в Post и PostCategory при создании новости.
+        post_id = Post.objects.create(article_or_news=article_or_news,
+                                   title=title,
+                                   text_article_or_news=text_article_or_news,
+                                   author=author)
+        PostCategory.objects.create(post=post_id, category=category_id)
+
+        # # получаем html
+        # html_content = render_to_string('news_created.html', {template_name:'/news/create',})
+        #
+        # for user in users:
+        #     msg = EmailMultiAlternatives(
+        #         # Имя клиента ,текст, заголовок, согласно задания.
+        #         subject = f'Здравствуй, {user}. Новая статья в твоём любимом разделе! {title}',
+        #         # Длина сообщения, согласно задания.
+        #         # Отправляем только первые 50 символов текста новости.
+        #         body = text_article_or_news[:50],
+        #         from_email = 'passtreltsov@yandex.ru', # здесь указываю почту, с которой буду отправлять
+        #         to = [user.email] # здесь список получателей.
+        #     )
+        #
+        #     msg.attach_alternative(html_content, "text/html")  # добавляем html
+        #     msg.send()  # отсылаем
+
+        # # Отправляю письма всем кто подписан на данную категорию.
+        # # Получаем пользователей, подписанных на категорию новости.
+        users = User.objects.filter(categories_subscribers__category=category_id)
+        for user in users:
+            send_mail(
+                # Имя клиента ,текст, заголовок, согласно задания.
+                subject = f'Здравствуй, {user}. Новая статья в твоём любимом разделе! {title}',
+                # Длина сообщения, согласно задания.
+                # Отправляем только первые 50 символов текста новости.
+                message = text_article_or_news[:50],
+                from_email = 'passtreltsov@yandex.ru', # здесь указываю почту, с которой буду отправлять
+                recipient_list = [user.email] # здесь список получателей.
+            )
+
+        return redirect('/news/create')
+
+
+
+
+
 # Представление прав (добавления - add и изменения - change) дступа приложения articles модели Post.
 class MyView(PermissionRequiredMixin, View):
     permission_required = ('articles.add_post',
                            'articles.change_post',)
+
 
 class NewsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -49,6 +123,7 @@ class NewsList(ListView):
         context['filterset'] = self.filterset
         return context
 
+
 class ArticleDetail(DetailView):
        # Модель всё та же, но мы хотим получать информацию по отдельной статье.
        model = Post
@@ -57,26 +132,15 @@ class ArticleDetail(DetailView):
        # Название объекта, в котором будет выбранная пользователем статья.
        context_object_name = 'article'
 
-# Добавляем новое представление для создания Новостей.
-class NewsCreate(CreateView):
-    # Проверка доступа на добавление.
-    permission_required = ('articles.add_post',)
-
-    # Указываем нашу разработанную форму
-    form_class = PostForm
-    # модель товаров
-    model = Post
-    # и новый шаблон, в котором используется форма.
-    template_name = 'news_edit.html'
 
 # Добавляем представление для изменения Новостей.
 class NewsUpdate(UpdateView):
     # Проверка доступа на изменение.
     permission_required = ('articles.change_post',)
-
     form_class = PostForm
     model = Post
     template_name = 'news_edit.html'
+
 
 # Представление удаляющее Новости.
 class NewsDelete(DeleteView):
@@ -89,19 +153,19 @@ class NewsDelete(DeleteView):
 class ArticleCreate(CreateView):
     # Проверка доступа на добавление.
     permission_required = ('articles.add_post',)
-
     form_class = ArticleForm
     model = Post
     template_name = 'articl_edit.html'
+
 
 # Добавляем представление для изменения Статей.
 class ArticleUpdate(UpdateView):
     # Проверка доступа на изменение.
     permission_required = ('articles.change_post',)
-
     form_class = ArticleForm
     model = Post
     template_name = 'articl_edit.html'
+
 
 # Представление удаляющее Статьи.
 class ArticleDelete(DeleteView):

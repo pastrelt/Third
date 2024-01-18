@@ -54,6 +54,10 @@ class Category(models.Model):
     # подписанные на обновления в данной категории.
     subscribers = models.ManyToManyField(User, through = 'Categories_subscribers')
 
+    # Выводит значение username при вызове Author.author.
+    def __str__(self):
+        return (self.name_of_category)
+
 # 2.1 Модель Categories_subscribers
 # Добавил вспомоательную модель при связи многие ко многим.
 class Categories_subscribers(models.Model):
