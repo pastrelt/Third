@@ -1,12 +1,10 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
-from django.contrib.auth.models import User
 from .models import Post, Author
 
 
+# Форма для просмотра новостей вход через news/.
 class PostForm(forms.ModelForm):
-    #queryset_user = User.objects.all()
 
     # Первичные устаноки отдельных полей.
     article_or_news = forms.CharField(initial="новость", widget=forms.HiddenInput()) # не выводим на экран.
@@ -27,9 +25,8 @@ class PostForm(forms.ModelForm):
             'text_article_or_news',
             'author',
         ]
-
+# Форма для просмотра статей вход через article/.
 class ArticleForm(forms.ModelForm):
-    #queryset_user = User.objects.all()
 
     # Первичные устаноки отдельных полей.
     article_or_news = forms.CharField(initial="статья", widget=forms.HiddenInput()) # не выводим на экран.

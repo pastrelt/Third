@@ -2,7 +2,13 @@
 
 {% block content %}
 <h2>Страница авторизованного пользователя {{request.user.username}}</h2>
-<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+<div>
+    <!--    Здесь может содержаться персональная информация для каждого пользователя -->
+    {% if not is_not_authors %}
+        Вы присоединины к группе "Авторы".
+    {% endif %}
+
+</div>
 
 <button> <a href="accounts/logout/">Выйти</a> </button>
 
@@ -10,4 +16,23 @@
 {% if is_not_authors %}
 <button> <a href="sign/upgrade/"> Присоединиться к группе "Авторы"</a> </button>
 {% endif %}
+
+<!-- Вывод информации о существующих категориях -->
+<!--<h3>Существующие категории:</h3>-->
+<!--<ul>-->
+<!--    {% for category in categories %}-->
+<!--        <li>{{ category.name_of_category }}</li>-->
+<!--    {% endfor %}-->
+<!--</ul>-->
+<!-- Вывод информации о существующих категориях -->
+<h3>Существующие категории:</h3>
+<form method="post">
+    {% csrf_token %}
+    <ul>
+        {% for category in categories %}
+            <li><input type="checkbox" name="categories" value="{{ category.id }}"> {{ category.name_of_category }}</li>
+        {% endfor %}
+    </ul>
+    <button type="submit">Подписаться</button>
+</form>
 {% endblock %}
