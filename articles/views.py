@@ -13,6 +13,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 
 # Добавляем для отправки сообщения.
 from django.shortcuts import render, reverse, redirect
+from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from .models import Author, PostCategory, Category
 from django.core.mail import send_mail
@@ -33,6 +34,7 @@ class NewsCreate(CreateView):
 
     # Переопределяем метод form_valid для дополниетльной работы в таблице PostCategory.
     def form_valid(self, form):
+        # Подготовка данных.
         author = form.cleaned_data['author']
         article_or_news = form.cleaned_data['article_or_news']
         title = form.cleaned_data['title']
@@ -47,35 +49,30 @@ class NewsCreate(CreateView):
                                    author=author)
         PostCategory.objects.create(post=post_id, category=category_id)
 
-        # # получаем html
-        # html_content = render_to_string('news_created.html', {template_name:'/news/create',})
-        #
-        # for user in users:
-        #     msg = EmailMultiAlternatives(
-        #         # Имя клиента ,текст, заголовок, согласно задания.
-        #         subject = f'Здравствуй, {user}. Новая статья в твоём любимом разделе! {title}',
-        #         # Длина сообщения, согласно задания.
-        #         # Отправляем только первые 50 символов текста новости.
-        #         body = text_article_or_news[:50],
-        #         from_email = 'passtreltsov@yandex.ru', # здесь указываю почту, с которой буду отправлять
-        #         to = [user.email] # здесь список получателей.
-        #     )
-        #
-        #     msg.attach_alternative(html_content, "text/html")  # добавляем html
-        #     msg.send()  # отсылаем
+        # Готовим данные URL для гиперссылки.
+        article_url = reverse('article_detail', args=[post_id.pk])
+        print(article_url)
 
         # # Отправляю письма всем кто подписан на данную категорию.
         # # Получаем пользователей, подписанных на категорию новости.
         users = User.objects.filter(categories_subscribers__category=category_id)
         for user in users:
+            # Корректируем переменную шаблона.
+            # Создаю переменную для передачи данных в шаблон.
+            template_date = {'title':title,
+                             'text_article_or_news':text_article_or_news,
+                             'user':user.username,
+                             'article_url':article_url}
+            # Получаем html шаблон.
+            html_content = render_to_string('news_created.html', {'template_date': template_date})
+            # Выводим сообшение.
+            # Имя клиента ,текст, заголовок, согласно задания в шаблоне templates/news_created.html.
             send_mail(
-                # Имя клиента ,текст, заголовок, согласно задания.
-                subject = f'Здравствуй, {user}. Новая статья в твоём любимом разделе! {title}',
-                # Длина сообщения, согласно задания.
-                # Отправляем только первые 50 символов текста новости.
-                message = text_article_or_news[:50],
+                subject = f'{category}', # тема письма обязательный параметр
+                message = "", # обязательный параметр
                 from_email = 'passtreltsov@yandex.ru', # здесь указываю почту, с которой буду отправлять
-                recipient_list = [user.email] # здесь список получателей.
+                recipient_list = [user.email], # здесь список получателей.
+                html_message = html_content  # Добавляем свёрстанный HTML-шаблон
             )
 
         return redirect('/news/create')

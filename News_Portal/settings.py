@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['127.0.0.1']
 
 INSTALLED_APPS = [
 
-
 # The following apps are required:
     'django.contrib.admin',
     'django.contrib.auth',
@@ -62,6 +61,7 @@ INSTALLED_APPS = [
 
     # Приложение, которое может помочь вам просматривать все настройки URL проекта.
     'django_extensions',
+
 ]
 
 SITE_ID = 1
@@ -86,18 +86,14 @@ ROOT_URLCONF = 'News_Portal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
-        #'DIRS': [BASE_DIR/'templates'],
+        # Это верная настройка 'DIRS' не троать!
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        #'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-
                 # `allauth` нужно это от Джанго.
                 'django.template.context_processors.request',
-
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
@@ -197,3 +193,6 @@ EMAIL_PORT = 465  # Порт smtp сервера тоже одинаковый.
 EMAIL_HOST_USER = 'passtreltsov'  # Имя почтовоого ящика ( до собаки ) отправителя.
 EMAIL_HOST_PASSWORD = 'uzsjmibnpkxffmyf'  # Пароль от почты.
 EMAIL_USE_SSL = True  # Яндекс использует ssl.
+
+# Здесь указываем уже свою ПОЛНУЮ почту, с которой будут отправляться письма.
+DEFAULT_FROM_EMAIL = 'passtreltsov@yandex.ru'

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2> Здравствуй, {{ template_date.user }}. Новая статья в твоём любимом разделе! {{ template_date.title }} </h2>
+    <p> {{ template_date.text_article_or_news|truncatechars:50 }} </p>
+    <p> Прочитать статью полностью можно по ссылке:
+        <a href="http://127.0.0.1:8000{{ template_date.article_url }}">
+                    http://127.0.0.1:8000{{ template_date.article_url }} </a> </p>
+</body>
+</html>
+
+
