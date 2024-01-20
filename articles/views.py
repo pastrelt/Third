@@ -50,7 +50,8 @@ def send_weekly_articles():
         )
 
         # Формируем список новых статей с гиперссылками на них
-        article_list = "\n".join([f"{article.title}: http://127.0.0.1:8000{article.get_absolute_url()}" for article in new_articles])
+        article_list = "\n".join([f"{article.title}: http://127.0.0.1:8000{article.get_absolute_url()}"
+                                  for article in new_articles])
 
         # Отправляем письмо со списком новых статей подписчикам категории
         for subscriber in subscribers:
