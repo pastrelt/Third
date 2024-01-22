@@ -6,6 +6,14 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import SubscribeForm
 
+# Настройки Celery.
+# Базовой структурной единицей системы Celery является task (задача).
+from django.http import HttpResponse
+from django.views import View
+
+# Пример из учебника.
+#from .tasks import hello
+
 
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'protect/index.html'
@@ -30,3 +38,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
                                                                 category_id=category_id.id))
 
         return super().get(request, *args, **kwargs)
+
+    # Пример из учебника.
+    # Напишем простую задачу, которая будет выводить «Hello, world!» в консоль.
+    # Демонстрация работы Celery!
+    # def get(self, request):
+    #     hello.delay()
+    #     return HttpResponse('Hello!')

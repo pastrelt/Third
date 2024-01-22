@@ -18,49 +18,6 @@ from django.contrib.auth.models import User
 from .models import Author, PostCategory, Category
 from django.core.mail import send_mail
 
-# Добавляем для отправки сообщений по событию - еженедельная отправка.
-from django.db.models import Count
-from django.utils import timezone
-from datetime import timedelta
-from celery import shared_task
-from .models import Categories_subscribers
-
-
-
-# Для периодического запуска задачи отправки писем, использую планировщик задач Celery.
-@shared_task
-def send_weekly_articles():
-    # Получаем текущую дату и время
-    current_date = timezone.now()
-    # Определяем начальную и конечную даты для выборки статей за неделю
-    start_date = current_date - timedelta(days=7)
-    end_date = current_date
-
-    # Получаем все категории
-    categories = Category.objects.all()
-    for category_name in categories:
-
-        # Получаем подписчиков категории
-        subscribers = category.subscribers.all()
-
-        # Получаем новые статьи для данной категории за последнюю неделю
-        new_articles = Post.objects.filter(
-            category=category_name,
-            date_and_time__range=(start_date, end_date)
-        )
-
-        # Формируем список новых статей с гиперссылками на них
-        article_list = "\n".join([f"{article.title}: http://127.0.0.1:8000{article.get_absolute_url()}"
-                                  for article in new_articles])
-
-        # Отправляем письмо со списком новых статей подписчикам категории
-        for subscriber in subscribers:
-            send_mail(
-                f"Новые статьи в категории '{category_name}' за последнюю неделю",
-                article_list,
-                "passtreltsov@yandex.ru",
-                [subscriber.email]
-            )
 
 
 # Добавляем новое представление для создания Новостей.

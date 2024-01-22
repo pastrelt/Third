@@ -75,6 +75,8 @@ CELERY_ACCEPT_CONTENT = ['application/json'] # допустимый формат
 CELERY_TASK_SERIALIZER = 'json' # метод сериализации задач.
 CELERY_RESULT_SERIALIZER = 'json' # метод сериализации результатов.
 
+#BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
 SITE_ID = 1
 
 MIDDLEWARE = [
