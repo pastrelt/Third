@@ -16,11 +16,9 @@ from django.shortcuts import render, reverse, redirect
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from .models import Author, PostCategory, Category
-from django.core.mail import send_mail
+from .tasks import sending_notifications
 
 
-
-# Добавляем новое представление для создания Новостей.
 # Изменил класс, добавляем нового представления для создания Новостей с выбором категории.
 class NewsCreate(CreateView):
     # Проверка доступа на добавление.
@@ -33,6 +31,7 @@ class NewsCreate(CreateView):
     template_name = 'news_edit.html'
 
     # Переопределяем метод form_valid для дополниетльной работы в таблице PostCategory.
+    # Добавлен выбор категории и отправка сообщения подписнному на категорию клиенту.
     def form_valid(self, form):
         # Подготовка данных.
         author = form.cleaned_data['author']
@@ -51,10 +50,9 @@ class NewsCreate(CreateView):
 
         # Готовим данные URL для гиперссылки.
         article_url = reverse('article_detail', args=[post_id.pk])
-        print(article_url)
 
-        # # Отправляю письма всем кто подписан на данную категорию.
-        # # Получаем пользователей, подписанных на категорию новости.
+        # Отправляю письма всем кто подписан на данную категорию.
+        # Получаем пользователей, подписанных на категорию новости.
         users = User.objects.filter(categories_subscribers__category=category_id)
         for user in users:
             # Корректируем переменную шаблона.
@@ -64,16 +62,11 @@ class NewsCreate(CreateView):
                              'user':user.username,
                              'article_url':article_url}
             # Получаем html шаблон.
-            html_content = render_to_string('news_created.html', {'template_date': template_date})
-            # Выводим сообшение.
-            # Имя клиента ,текст, заголовок, согласно задания в шаблоне templates/news_created.html.
-            send_mail(
-                subject = f'{category}', # тема письма обязательный параметр
-                message = "", # обязательный параметр
-                from_email = 'passtreltsov@yandex.ru', # здесь указываю почту, с которой буду отправлять
-                recipient_list = [user.email], # здесь список получателей.
-                html_message = html_content  # Добавляем свёрстанный HTML-шаблон
-            )
+            html_content = render_to_string('news_created.html',
+                                            {'template_date': template_date})
+
+            # Вызываю задачу Celery на отправку мнгновенноо сообщения о новой новости.
+            sending_notifications.delay(category_id.name_of_category, user.email, html_content)
 
         return redirect('/news/create')
 

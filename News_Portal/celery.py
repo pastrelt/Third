@@ -24,9 +24,10 @@ app.autodiscover_tasks()
 # }
 
 
+# Еженедельная рассылка с последними новостями за неделю (каждый понедельник в 8:00 утра).
 app.conf.beat_schedule = {
     'weekly_newsletter_every_мonday_8_am': {
-        'task': 'articles.tasks.send_weekly_articles',
+        'task': 'articles.tasks.',
         # проверка crontab()
         # 'schedule': crontab(),
         # работает!

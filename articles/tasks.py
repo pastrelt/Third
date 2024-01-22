@@ -3,7 +3,7 @@
 from celery import shared_task
 import time
 
-# Добавляем для задачи send_weekly_articles - еженедельная рассылка с последними новостями.
+# Добавляем для задачи send_weekly_articles - еженедельная рассылка с последними новостями за неделю.
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
@@ -21,7 +21,19 @@ from django.core.mail import send_mail
 #         print(i+1)
 
 
-# Задача периодической отправки отправки писем.
+# Задача - рассылка уведомлений подписчикам после создания новости.
+@shared_task
+def sending_notifications(category, user_email, html_content):
+    send_mail(
+        subject=f'Рассылка уведомлений подписчикам категории {category}, после создания новости.',  # тема письма обязательный параметр
+        message="",  # обязательный параметр
+        from_email='passtreltsov@yandex.ru',  # здесь указываю почту, с которой буду отправлять
+        recipient_list=[user_email],  # здесь список получателей.
+        html_message=html_content  # Добавляем свёрстанный HTML-шаблон
+    )
+
+
+# Задача - еженедельная рассылка с последними новостями за неделю.
 @shared_task
 def send_weekly_articles():
 
