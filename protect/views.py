@@ -11,6 +11,11 @@ from .forms import SubscribeForm
 from django.http import HttpResponse
 from django.views import View
 
+# Логирование.
+import logging
+
+logger = logging.getLogger('django_general')
+
 # Пример из учебника.
 #from .tasks import hello
 
@@ -19,6 +24,11 @@ class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'protect/index.html'
 
     def get_context_data(self, **kwargs):
+        # Проверка работы логеров.
+        logger.info("Проверка вывода логгера info!")
+        logger.warning("Проверка вывода логгера warning!)")
+        logger.error("Проверка вывода логгера error!)")
+
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         # Передаем информацию о катеориях для возможности подписки.

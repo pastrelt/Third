@@ -209,3 +209,191 @@ EMAIL_USE_SSL = True  # Яндекс использует ssl.
 
 # Здесь указываем уже свою ПОЛНУЮ почту, с которой будут отправляться письма.
 DEFAULT_FROM_EMAIL = 'passtreltsov@yandex.ru'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    # Подотовка.
+    'formatters': {
+        # 1. В консоль должны выводиться все сообщения уровня DEBUG и выше,
+            # включающие время,
+            # уровень сообщения,
+            # сообщения.
+        'verbose': {
+            'format': '%(asctime)s - %(levelname)s - %(message)s'
+        },
+        # 1. Для сообщений WARNING и выше дополнительно должен выводиться
+            # путь к источнику события (используется аргумент pathname в форматировании).
+        'source': {
+            'format': '%(asctime)s - %(levelname)s - %(pathname)s - %(message)s'
+        },
+        # 1. А для сообщений ERROR и CRITICAL еще должен выводить
+            # стэк ошибки (аргумент exc_info).
+        'error': {
+            'format': '%(asctime)s - %(levelname)s - %(pathname)s - %(message)s\n%(exc_info)s\n' # перевод строки нужен для повышения читаемости кода.
+        },
+        # 2. В файл general.log должны выводиться сообщения уровня INFO и выше только с указанием
+            # времени,
+            # уровня логирования,
+            # модуля, в котором возникло сообщение (аргумент module) и само
+            # сообщение. Сюда также попадают сообщения с регистратора django.
+        'info': {
+            'format': '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+        },
+        # 4. В файл security.log должны попадать только сообщения, связанные с безопасностью,
+        # а значит только из логгера django.security. Формат вывода предполагает
+            # время,
+            # уровень логирования,
+            # модуль и
+            # сообщение.
+        'security': {
+            'format': '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+        },
+        # 5. На почту должны отправляться сообщения уровней ERROR и выше.
+        # По формату, как в errors.log, но без стэка ошибок.
+        'mail': {
+            'format': '%(asctime)s - %(levelname)s - %(pathname)s - %(message)s'
+        },
+    },
+
+    # Фильтр.
+    # ... при помощи фильтров нужно указать,
+    'filters': {
+        # что в консоль сообщения отправляются только при DEBUG = True,
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        # ..., а на почту и в файл general.log — только при DEBUG = False.
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+
+    # Обработка.
+    'handlers': {
+        # 1. В консоль должны выводиться все сообщения уровня DEBUG и выше.
+        # + фильтр на 'DEBUG'
+        'console_debug': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        # 1. В консоль для сообщений WARNING и выше дополнительно должен выводиться
+        # путь к источнику события (используется аргумент pathname в форматировании).
+        # + фильтр на 'DEBUG'
+        'console_warning': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'source',
+        },
+        # 1. В консоль для сообщений ERROR и CRITICAL еще
+        # должен выводить стэк ошибки (аргумент exc_info).
+        # + фильтр на 'DEBUG'
+        'console_error': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'error',
+        },
+        # 2. В файл general.log должны выводиться сообщения уровня INFO и выше.
+        'file_general': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'News_Portal/log/general.log',  # Путь к файлу general.log
+            'encoding': 'utf-8',  # Установка кодировки на utf-8
+            'formatter': 'info',
+        },
+        # 3. В файл errors.log должны выводиться сообщения только уровня ERROR и CRITICAL.
+        'file_errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'News_Portal/log/errors.log',  # Путь к файлу errors.log
+            'formatter': 'error',
+        },
+        #4. В файл security.log должны попадать только сообщения, связанные с безопасностью.
+        'file_security': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'News_Portal/log/security.log',  # Путь к файлу security.log
+            'encoding': 'utf-8',  # Установка кодировки на utf-8
+            'formatter': 'security',
+        },
+        # 5. На почту должны отправляться сообщения уровней ERROR и выше.
+        # + фильтр на 'DEBUG'
+        'mail_errors_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'mail',
+        },
+    },
+
+    # Логирование.
+    'loggers': {
+        # 1. В консоль должны выводиться все сообщения уровня DEBUG и выше,
+        # cюда должны попадать все сообщения с основного логгера django.
+        'django': {
+            'handlers': ['console_debug',
+                         'console_warning',
+                         'console_error',
+                         ],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        # 2. В файл general.log должны выводиться сообщения уровня INFO и выше,
+        # cюда также попадают сообщения с регистратора django.
+        'django_general': {
+            'handlers': ['file_general',],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        # 3. В этот файл должны попадать сообщения только из логгеров
+        # django.request,
+        # django.server,
+        # django.template,
+        # django.db.backends.
+        'django.request': {
+            'handlers': ['file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': ['file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['file_errors'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        #4. В файл security.log должны попадать только сообщения, связанные с безопасностью
+        'django.security': {
+            'handlers': ['file_security'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # 5. На почту должны отправляться сообщения уровней ERROR и выше из
+        # django.request и
+        # django.server.
+        'django.request': {
+            'handlers': ['mail_errors_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['mail_errors_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
+

@@ -7,6 +7,11 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
+# Логирование.
+import logging
+
+logger = logging.getLogger('django.security')
+
 
 class BaseRegisterView(CreateView):
     model = User
@@ -21,6 +26,10 @@ class BaseRegisterView(CreateView):
 @login_required
 def upgrade_me(request):
     user = request.user
+
+    # Лоирование имени пользователя.
+    logger.info(f'Пользователь: {user}')
+
     authors_group = Group.objects.get(name='authors')
     if not request.user.groups.filter(name='authors').exists():
         authors_group.user_set.add(user)

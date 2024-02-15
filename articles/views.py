@@ -18,6 +18,8 @@ from django.contrib.auth.models import User
 from .models import Author, PostCategory, Category
 from .tasks import sending_notifications
 
+# Логированиею.
+
 
 # Изменил класс, добавляем нового представления для создания Новостей с выбором категории.
 class NewsCreate(CreateView):

@@ -1,3 +1,4 @@
+""" Проверка док. сторки"""
 # Базовой структурной единицей системы Celery является task (задача).
 # Все задачи принято хранить в файлах с названием tasks.py.
 from celery import shared_task
@@ -67,5 +68,5 @@ def send_weekly_articles():
                 f"Новые статьи в категории '{category_name}' за последнюю неделю",
                 article_list,
                 "passtreltsov@yandex.ru",
-                [subscriber.email]
+                [subscriber.email] # FIXME # TODO
             )
